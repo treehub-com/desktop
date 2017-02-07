@@ -1,0 +1,29 @@
+{
+  "name": "tha-desktop",
+  "version": "0.0.0",
+  "description": "Treehub Desktop App",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/treehub/desktop.git"
+  },
+  "author": "John Clark <socrates37@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/treehub/desktop/issues"
+  },
+  "homepage": "https://gitlab.com/treehub/desktop#README",
+  "devDependencies": {
+    "electron": "1.6.0",
+    "eslint": "3.15.0",
+    "eslint-config-google": "0.7.1"
+  },
+  "dependencies": {
+    "koa": "2.0.0",
+    "koa-bodyparser": "3.2.0",
+    "koa-router": "7.0.1"
+  }
+}

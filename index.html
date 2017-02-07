@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="/TH.json"></script>
+    <script>
+      for (const pkg of Object.keys(TH)) {
+        if (Array.isArray(TH[pkg].components)) {
+          for (const component of TH[pkg].components) {
+            const script = document.createElement('script');
+            script.src = `/${pkg}/${component}`;
+            document.head.appendChild(script);
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <thd-app></thd-app>
+  </body>
+</html>
