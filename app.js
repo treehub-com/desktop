@@ -17,6 +17,11 @@ if (app.makeSingleInstance(focus)) {
   app.quit();
 }
 
+// Close when all windows are closed
+app.on('window-all-closed', () => {
+  app.quit();
+});
+
 // TODO show loading screen and any starup errors
 app.on('ready', async () => {
   try {
