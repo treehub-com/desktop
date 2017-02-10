@@ -11,7 +11,7 @@ let mainWindow = null;
 
 // Ensure only 1 app runs
 // We have to do this here to prevent 2 bootstraps executing at the same time
-if (app.makeSingleInstance(() => {})) {
+if (app.makeSingleInstance(focus)) {
   app.quit();
 }
 
@@ -29,3 +29,9 @@ app.on('ready', async () => {
       process.exit(1);
     });
 });
+
+function focus() {
+  if (mainWindow !== null) {
+    mainWindow.focus();
+  }
+}
