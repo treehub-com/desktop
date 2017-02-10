@@ -1,14 +1,19 @@
 const bodyParser = require('koa-bodyparser');
 const Koa = require('koa');
+const fetch = require('node-fetch');
 const fs = require('fs');
+const jszip = require('jszip');
 const path = require('path');
 const Router = require('koa-router');
 
 const packages = {};
-const routes = {};
+const routes = {
+  _: coreRoute,
+};
 
 const app = new Koa();
 const router = new Router();
+let server = null;
 
 // TH.json
 router.get('/TH.json', async (ctx) => {
@@ -33,7 +38,7 @@ router.post('/:pkg/:route(.*)', async (ctx) => {
 
   try {
     ctx.body = await routes[ctx.params.pkg]({
-      path: `/${ctx.params.route}`,
+      route: `/${ctx.params.route}`,
       body: ctx.request.body,
     });
   } catch (error) {
@@ -57,9 +62,17 @@ module.exports = {
     return new Promise((resolve) => {
       readPackages();
       loadRoutes();
-      app.listen(8985, resolve);
+      server = app.listen(8985, resolve);
     });
   },
+  stop: () => {
+    server.stop();
+  },
+  packages: () => {
+    return packages;
+  },
+  installPackage,
+  uninstallPackage,
 };
 
 function getFile(file) {
@@ -75,18 +88,22 @@ function getFile(file) {
 }
 
 function readPackages() {
-  for (const dir of getDirectories(process.env.TH_PACKAGE_PATH)) {
-    try {
-      const json = require(path.join(
-        process.env.TH_PACKAGE_PATH, dir, 'treehub.json'));
-      if (json.name !== dir) {
-        console.error(`invalid package: ${json.name} is in the folder ${dir}`);
-        continue;
-      }
-      packages[json.name] = json;
-    } catch(error) {
-      console.error(error);
+  for (const pkg of getDirectories(process.env.TH_PACKAGE_PATH)) {
+    readPackage(pkg);
+  }
+}
+
+function readPackage(pkg) {
+  try {
+    const json = require(path.join(
+      process.env.TH_PACKAGE_PATH, pkg, 'treehub.json'));
+    if (json.name !== pkg) {
+      console.error(`invalid package: ${json.name} is in the folder ${dir}`);
+      return;
     }
+    packages[json.name] = json;
+  } catch(error) {
+    console.error(error);
   }
 }
 
@@ -107,4 +124,81 @@ function loadRoutes() {
       }
     }
   }
+}
+
+async function coreRoute({route, body}) {
+  switch(route) {
+    case '/package/install':
+      return installPackage(body);
+    case '/package/uninstall':
+      return uninstallPackage(body);
+    default:
+      const error = new Error('Unknown Route');
+      error.status = 404;
+      throw error;
+  }
+}
+
+async function installPackage({name, version = 'latest'}) {
+  console.log(`installing package ${name}:${version}`);
+  // TODO check/sanitize name/version
+
+  // Get the package
+  const response = await fetch(`https://packages.treehub.com/${name}/${version}.zip`);
+  if (response.status !== 200) {
+    const error = new Error('Package Not Found');
+    error.status = 500;
+    throw error;
+  }
+  const body = await response.arrayBuffer();
+
+  // Load the zip file
+  const contents = await jszip.loadAsync(body);
+
+  // Create the package directory
+  await ensurePackageDirectory(name);
+  const promises = [];
+  contents.forEach((fileName, file) => {
+    promises.push(writePackageFile(name, fileName, file));
+  });
+  await Promise.all(promises);
+  readPackage(name);
+  return true;
+};
+
+async function uninstallPackage({name}) {
+  console.log(`uninstalling package ${name}`);
+  return 'uninstalling package';
+};
+
+function ensurePackageDirectory(name) {
+  return new Promise((resolve, reject) => {
+    fs.mkdir(path.join(process.env.TH_PACKAGE_PATH, name), (error) => {
+      if (error && error.code !== 'EEXIST') {
+        console.log(error);
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function writePackageFile(pkg, fileName, file) {
+  return new Promise((resolve, reject) => {
+    let error;
+    file.nodeStream()
+      .pipe(fs.createWriteStream(
+        path.join(process.env.TH_PACKAGE_PATH, pkg, fileName)))
+      .on('error', (err) => {
+        error = err;
+      })
+      .on('finish', () => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+    });
+  });
 }
