@@ -4,6 +4,7 @@ const server = require('./server.js');
 
 app.commandLine.appendSwitch('js-flags', '--harmony-async-await');
 
+// TODO ensure these directories exist!
 process.env.TH_PATH = path.join(app.getPath('home'), '.treehub');
 process.env.TH_PACKAGE_PATH = path.join(process.env.TH_PATH, 'packages');
 
