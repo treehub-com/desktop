@@ -15,9 +15,9 @@ const app = new Koa();
 const router = new Router();
 let server = null;
 
-// TH.json
-router.get('/TH.json', async (ctx) => {
-  ctx.body = `window.TH = ${JSON.stringify(packages)};`;
+// packages.json
+router.get('/packages.json', async (ctx) => {
+  ctx.body = JSON.stringify(packages);
 });
 
 // Components
