@@ -38,9 +38,6 @@
     "appId": "com.treehub.app.desktop",
     "mac": {
       "category": "public.app-category.education"
-    },
-    "win": {
-      "iconUrl": "(windows-only) https link to icon"
     }
   }
 }
