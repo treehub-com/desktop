@@ -1,7 +1,8 @@
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow, dialog} = require('electron');
 const fs = require('fs');
 const path = require('path');
 const server = require('./server.js');
+const {autoUpdater} = require('electron-updater');
 
 app.commandLine.appendSwitch('js-flags', '--harmony-async-await');
 
@@ -29,6 +30,21 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+autoUpdater.on('update-downloaded', (event, info) => {
+		// Ask user to update the app
+		dialog.showMessageBox({
+			type: 'question',
+			buttons: ['Install and Relaunch', 'Later'],
+			defaultId: 0,
+			message: 'A new version of Treehub has been downloaded',
+			detail: 'It will be installed the next time you restart the application',
+		}, (response) => {
+			if (response === 0) {
+				setTimeout(() => autoUpdater.quitAndInstall(), 1);
+			}
+		});
+	});
+
 // TODO show loading screen and any starup errors
 app.on('ready', async () => {
   try {
@@ -46,6 +62,9 @@ app.on('ready', async () => {
       height: 720,
     });
     mainWindow.loadURL('http://localhost:8985/');
+    if (process.env.NODE_ENV !== 'development') {
+      autoUpdater.checkForUpdates();
+    }
   } catch (error) {
     console.error(error);
     process.exit(1);
