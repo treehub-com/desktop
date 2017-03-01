@@ -53,7 +53,7 @@ app.on('ready', async () => {
     const promises = [];
     for (const pkg of requiredPackages) {
       if (installedPackages[pkg] === undefined) {
-        promises.push(server.installPackage({name: pkg}));
+        promises.push(server.installPackage({name: pkg}, true));
       }
     }
     await Promise.all(promises);

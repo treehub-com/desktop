@@ -139,7 +139,7 @@ async function coreRoute({route, body}) {
   }
 }
 
-async function installPackage({name, version = 'latest'}) {
+async function installPackage({name, version = 'latest'}, update = false) {
   console.log(`installing package ${name}:${version}`);
   // TODO check/sanitize name/version
 
@@ -162,7 +162,9 @@ async function installPackage({name, version = 'latest'}) {
     promises.push(writePackageFile(name, fileName, file));
   });
   await Promise.all(promises);
-  readPackage(name);
+  if (update) {
+    readPackage(name);
+  }
   return true;
 };
 
