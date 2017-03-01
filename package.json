@@ -8,7 +8,7 @@
     "build": "build --mac --win",
     "release": "build --mac --win",
     "start": "NODE_ENV=development electron .",
-    "watch": "nodemon --exec 'electron .'"
+    "watch": "NODE_ENV=development nodemon --exec 'electron .'"
   },
   "repository": {
     "type": "git",
