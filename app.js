@@ -14,6 +14,10 @@ process.env.TH_PACKAGE_PATH = path.join(process.env.TH_PATH, 'packages');
 if (!fs.existsSync(process.env.TH_PACKAGE_PATH)) {
   fs.mkdirSync(process.env.TH_PACKAGE_PATH);
 }
+process.env.TH_DATA_PATH = path.join(process.env.TH_PATH, 'data');
+if (!fs.existsSync(process.env.TH_DATA_PATH)) {
+  fs.mkdirSync(process.env.TH_DATA_PATH);
+}
 
 
 const requiredPackages = ['app', 'package-manager'];

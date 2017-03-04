@@ -6,6 +6,8 @@ const jszip = require('jszip');
 const path = require('path');
 const Router = require('koa-router');
 
+global.LevelUpBackend = require('leveldown');
+
 const packages = {};
 const routes = {
   _: coreRoute,
@@ -38,6 +40,7 @@ router.post('/:pkg/:route(.*)', async (ctx) => {
 
   try {
     ctx.body = await routes[ctx.params.pkg]({
+      datapath: path.join(process.env.TH_DATA_PATH, ctx.params.pkg) + path.sep,
       route: `/${ctx.params.route}`,
       body: ctx.request.body,
     });
@@ -119,6 +122,9 @@ function loadRoutes() {
       try {
         routes[pkg] = require(path.join(
           process.env.TH_PACKAGE_PATH, pkg, packages[pkg].route));
+        if (!fs.existsSync(path.join(process.env.TH_DATA_PATH, pkg))) {
+          fs.mkdirSync(path.join(process.env.TH_DATA_PATH, pkg));
+        }
       } catch(error) {
         console.error(error);
       }

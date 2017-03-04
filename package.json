@@ -6,6 +6,7 @@
   "main": "app.js",
   "scripts": {
     "build": "build --mac --win",
+    "postinstall": "install-app-deps",
     "release": "build --mac --win",
     "start": "NODE_ENV=development electron .",
     "watch": "NODE_ENV=development nodemon --exec 'electron .'"
@@ -33,6 +34,7 @@
     "koa": "2.0.1",
     "koa-bodyparser": "3.2.0",
     "koa-router": "7.0.1",
+    "leveldown": "1.6.0",
     "node-fetch": "2.0.0-alpha.3"
   },
   "build": {
