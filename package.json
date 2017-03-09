@@ -1,13 +1,15 @@
 {
-  "name": "Treehub",
-  "version": "0.1.1",
+  "name": "treehub",
+  "version": "0.1.2",
   "private": "true",
   "description": "Treehub Desktop App",
   "main": "app.js",
   "scripts": {
-    "build": "build --mac --win",
+    "build-mac": "build --mac",
+    "build-win": "build --win",
     "postinstall": "install-app-deps",
-    "release": "build --mac --win",
+    "release-mac": "build --mac --publish always",
+    "release-win": "build --win --publish always",
     "start": "NODE_ENV=development electron .",
     "watch": "NODE_ENV=development nodemon --exec 'electron .'"
   },
@@ -38,6 +40,7 @@
     "node-fetch": "2.0.0-alpha.3"
   },
   "build": {
+    "productName": "Treehub",
     "appId": "com.treehub.app.desktop",
     "mac": {
       "category": "public.app-category.education"
