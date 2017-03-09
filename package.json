@@ -1,7 +1,6 @@
 {
   "name": "treehub",
   "version": "0.1.2",
-  "private": "true",
   "description": "Treehub Desktop App",
   "main": "app.js",
   "scripts": {
