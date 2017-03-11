@@ -118,16 +118,20 @@ function getDirectories(srcpath) {
 
 function loadRoutes() {
   for (const pkg of Object.keys(packages)) {
-    if (packages[pkg].route !== undefined) {
-      try {
-        routes[pkg] = require(path.join(
-          process.env.TH_PACKAGE_PATH, pkg, packages[pkg].route));
-        if (!fs.existsSync(path.join(process.env.TH_DATA_PATH, pkg))) {
-          fs.mkdirSync(path.join(process.env.TH_DATA_PATH, pkg));
-        }
-      } catch(error) {
-        console.error(error);
+    loadRoute(pkg);
+  }
+}
+
+function loadRoute(pkg) {
+  if (packages[pkg].route !== undefined) {
+    try {
+      routes[pkg] = require(path.join(
+        process.env.TH_PACKAGE_PATH, pkg, packages[pkg].route));
+      if (!fs.existsSync(path.join(process.env.TH_DATA_PATH, pkg))) {
+        fs.mkdirSync(path.join(process.env.TH_DATA_PATH, pkg));
       }
+    } catch(error) {
+      console.error(error);
     }
   }
 }
@@ -170,6 +174,7 @@ async function installPackage({name, version = 'latest'}, update = false) {
   await Promise.all(promises);
   if (update) {
     readPackage(name);
+    loadRoute(name);
   }
   return true;
 };
