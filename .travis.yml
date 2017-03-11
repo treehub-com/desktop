@@ -11,10 +11,6 @@ cache:
   - $HOME/.electron
   - $HOME/.cache
 
-before_install:
-  - brew update
-  - brew install git-lfs
-
 install:
 - nvm install 7
 - npm install
