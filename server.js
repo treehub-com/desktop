@@ -5,8 +5,7 @@ const fs = require('fs');
 const jszip = require('jszip');
 const path = require('path');
 const Router = require('koa-router');
-
-global.LevelUpBackend = require('leveldown');
+const LevelUpBackend = require('leveldown');
 
 const packages = {};
 const routes = {
@@ -40,11 +39,11 @@ router.post('/:pkg/:route(.*)', async (ctx) => {
 
   try {
     ctx.body = await routes[ctx.params.pkg]({
-      datapath: path.join(process.env.TH_DATA_PATH, ctx.params.pkg) + path.sep,
       route: `/${ctx.params.route}`,
       body: ctx.request.body,
     });
   } catch (error) {
+    console.error(error)
     ctx.body = {message: error.message};
     ctx.status = error.status || 500;
   }
@@ -62,10 +61,13 @@ app
 
 module.exports = {
   start: () => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       readPackages();
-      loadRoutes();
-      server = app.listen(8985, resolve);
+      loadRoutes()
+        .then(() => {
+          server = app.listen(8985, () => resolve());
+        })
+        .catch((error) => reject(error));
     });
   },
   stop: () => {
@@ -117,19 +119,25 @@ function getDirectories(srcpath) {
 }
 
 function loadRoutes() {
+  const promises = [];
   for (const pkg of Object.keys(packages)) {
-    loadRoute(pkg);
+    promises.push(loadRoute(pkg));
   }
+  return Promise.all(promises);
 }
 
-function loadRoute(pkg) {
+async function loadRoute(pkg) {
   if (packages[pkg].route !== undefined) {
     try {
-      routes[pkg] = require(path.join(
+      const route = require(path.join(
         process.env.TH_PACKAGE_PATH, pkg, packages[pkg].route));
       if (!fs.existsSync(path.join(process.env.TH_DATA_PATH, pkg))) {
         fs.mkdirSync(path.join(process.env.TH_DATA_PATH, pkg));
       }
+      routes[pkg] = await route({
+        LevelUpBackend,
+        pathPrefix: path.join(process.env.TH_DATA_PATH, pkg) + path.sep,
+      });
     } catch(error) {
       console.error(error);
     }
