@@ -43,7 +43,6 @@ router.post('/:pkg/:route(.*)', async (ctx) => {
       body: ctx.request.body,
     });
   } catch (error) {
-    console.error(error)
     ctx.body = {message: error.message};
     ctx.status = error.status || 500;
   }
