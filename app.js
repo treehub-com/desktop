@@ -20,7 +20,7 @@ if (!fs.existsSync(process.env.TH_DATA_PATH)) {
 }
 
 
-const requiredPackages = ['api', 'app', 'package-manager'];
+const requiredPackages = ['api', 'app', 'package-manager', 'theme'];
 let mainWindow = null;
 
 // Ensure only 1 app runs
