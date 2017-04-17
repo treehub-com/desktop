@@ -1,6 +1,6 @@
 {
   "name": "treehub",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Treehub Desktop App",
   "main": "app.js",
   "scripts": {
