@@ -42,7 +42,7 @@ if (process.platform === 'darwin') {
   template.unshift({
     label: app.getName(),
     submenu: [
-      {role: 'about'},
+      {role: 'about', label: 'About Treehub'},
       {type: 'separator'},
       {role: 'services', submenu: []},
       {type: 'separator'},
@@ -50,7 +50,7 @@ if (process.platform === 'darwin') {
       {role: 'hideothers'},
       {role: 'unhide'},
       {type: 'separator'},
-      {role: 'quit'},
+      {role: 'quit', label: 'Quit'},
     ],
   });
 
