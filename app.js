@@ -1,7 +1,8 @@
-const {app, BrowserWindow, dialog} = require('electron');
+const {app, BrowserWindow, dialog, Menu} = require('electron');
 const fs = require('fs');
 const path = require('path');
 const server = require('./server.js');
+const menu = require('./menu.js');
 const {autoUpdater} = require('electron-updater');
 
 app.commandLine.appendSwitch('js-flags', '--harmony-async-await');
@@ -51,6 +52,7 @@ autoUpdater.on('update-downloaded', (event, info) => {
 
 // TODO show loading screen and any starup errors
 app.on('ready', async () => {
+  Menu.setApplicationMenu(menu);
   try {
     await server.start();
     const installedPackages = server.packages();
