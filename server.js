@@ -17,7 +17,7 @@ const router = new Router();
 let server = null;
 
 // packages.json
-router.get('/packages.json', async (ctx) => {
+router.get('/_/packages.json', async (ctx) => {
   ctx.body = JSON.stringify(packages);
 });
 
